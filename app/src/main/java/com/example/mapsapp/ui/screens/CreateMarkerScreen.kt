@@ -51,7 +51,6 @@ import com.example.mapsapp.viewmodels.AuthViewModelFactory
 import com.example.mapsapp.viewmodels.MyViewModel
 import com.google.android.gms.maps.model.LatLng
 import java.io.File
-import java.util.UUID
 
 
 @Composable

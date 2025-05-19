@@ -40,9 +40,6 @@ fun ExternalNavigationWrapper() {
         }
         composable<Destination.Drawer> {
             DrawerScreen {
-                // Llama primero a tu función de logout
-                viewModel.logout(context) // Asegúrate de tener esta función implementada
-                // Luego navega al login y limpia el backstack
                 navController.navigate(Destination.Login) {
                     popUpTo<Destination.Login> { inclusive = true }
                 }

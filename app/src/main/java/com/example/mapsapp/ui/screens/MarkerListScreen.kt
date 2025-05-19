@@ -31,6 +31,7 @@ import coil.compose.AsyncImage
 
 @Composable
 fun MarkerListScreen(
+    modifier: Modifier,
     myViewModel: MyViewModel,
     navigateToDetail: (Int?) -> Unit
 ) {
@@ -38,8 +39,12 @@ fun MarkerListScreen(
 
         myViewModel.getAllMarkers()
 
-
     LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .background(Color.White)
+            .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp)),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -109,3 +114,4 @@ fun MarkerItem(
         }
     }
 }
+

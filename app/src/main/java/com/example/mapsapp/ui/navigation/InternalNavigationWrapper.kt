@@ -34,7 +34,7 @@ fun InternalNavigationWrapper(navController: NavHostController, modifier: Modifi
 
 
         composable<Destination.ListMarker> {
-            MarkerListScreen (myViewModel){ id -> navController.navigate(Destination.DetailMarker(id))
+            MarkerListScreen (modifier,myViewModel){ id -> navController.navigate(Destination.DetailMarker(id))
             }
         }
 
