@@ -3,10 +3,29 @@ package com.example.mapsapp.ui.navigation
 import kotlinx.serialization.Serializable
 
 sealed class Destination {
-    @kotlinx.serialization.Serializable
+
+    @Serializable
     object Home: Destination()
 
-    @kotlinx.serialization.Serializable
+    @Serializable
+    object permision: Destination()
+
+    @Serializable
+    object CreateMarker: Destination()
+
+    @Serializable
+    object ListMarker: Destination()
+
+    @Serializable
+    object Login: Destination()
+
+    @Serializable
+    object  Register: Destination()
+
+    @Serializable
+    object Drawer: Destination()
+
+    @Serializable
     object Settings: Destination()
 
     @Serializable

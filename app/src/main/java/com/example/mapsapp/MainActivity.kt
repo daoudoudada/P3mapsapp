@@ -11,8 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.mapsapp.ui.navigation.MyDrawerMenu
 import com.example.mapsapp.ui.theme.MapsAppTheme
+import com.example.twonavigations.ui.navigation.ExternalNavigationWrapper
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,8 +20,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MapsAppTheme {
-                MyDrawerMenu()
-
+                ExternalNavigationWrapper()
             }
             }
         }
