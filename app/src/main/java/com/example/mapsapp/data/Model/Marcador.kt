@@ -1,16 +1,18 @@
 package com.example.mapsapp.data.Model
 
+import android.graphics.Bitmap
 import kotlinx.datetime.Instant
-import java.util.UUID
+import kotlinx.serialization.Serializable
 
-data class Marker(
-    val id: UUID = UUID.randomUUID(),
-    val user_id: UUID,
+@Serializable
+data class Marcador(
+    val id: Int? =null,
+    val user_id: String?,
     val title: String,
     val description: String? = null,
     val latitude: Double,
     val longitude: Double,
-    val image_url: String? = null,
+    val image_url: String ? = null,
     val created_at: Instant? = null,
     val updated_at: Instant? = null
 )

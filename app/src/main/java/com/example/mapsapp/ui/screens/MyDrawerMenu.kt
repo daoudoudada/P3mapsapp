@@ -3,18 +3,24 @@ package com.example.mapsapp.ui.screens
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -41,10 +47,21 @@ fun DrawerScreen(logout: () -> Unit) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var selectedItemIndex by remember { mutableStateOf(0) }
+
     ModalNavigationDrawer(
+        drawerState = drawerState,
         gesturesEnabled = false,
         drawerContent = {
-            ModalDrawerSheet {
+            ModalDrawerSheet(
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Menú de navegación",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+
                 DrawerItem.entries.forEachIndexed { index, drawerItem ->
                     NavigationDrawerItem(
                         icon = {
@@ -58,41 +75,54 @@ fun DrawerScreen(logout: () -> Unit) {
                         onClick = {
                             selectedItemIndex = index
                             scope.launch { drawerState.close() }
-                            navController.navigate(drawerItem.route)
-                        }
+                            navController.navigate(drawerItem.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
                 }
-                Column(
-                    Modifier.fillMaxSize().padding(bottom = 24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Bottom
-                ) {
-                    IconButton(onClick = { logout() }) {
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Divider(modifier = Modifier.padding(horizontal = 16.dp))
+                NavigationDrawerItem(
+                    icon = {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                            contentDescription = "Logout"
+                            contentDescription = "Cerrar sesión"
                         )
-                    }
-                }
+                    },
+                    label = { Text("Cerrar sesión") },
+                    selected = false,
+                    onClick = { logout() },
+                    modifier = Modifier
+                        .padding(NavigationDrawerItemDefaults.ItemPadding)
+                        .padding(bottom = 16.dp)
+                )
             }
-        },
-        drawerState = drawerState
+        }
     ) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Awesome App") },
+                    title = { Text("El Mapa") },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
+                            Icon(imageVector = Icons.Default.Menu, contentDescription = "Abrir menú")
                         }
                     }
                 )
             }
         ) { innerPadding ->
-            InternalNavigationWrapper(navController, Modifier.padding(innerPadding))
+            InternalNavigationWrapper(
+                navController = navController,
+                modifier = Modifier.padding(innerPadding)
+            )
         }
-
     }
-
 }

@@ -13,4 +13,15 @@ class PermissionViewModel: ViewModel() {
     fun updatePermissionStatus(status: PermissionStatus) {
         _permissionStatus.value = status
     }
+
+
+    private val _permissionsStatus = mutableStateOf<Map<String, PermissionStatus>>(emptyMap())
+    val permissionsStatus: State<Map<String, PermissionStatus>> = _permissionsStatus
+
+    fun updatePermissionStatus(permission: String, status: PermissionStatus) {
+        _permissionsStatus.value = _permissionsStatus.value.toMutableMap().apply {
+            this[permission] = status
+        }
+    }
+
 }

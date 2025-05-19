@@ -1,5 +1,7 @@
 package com.example.mapsapp.ui.navigation
 
+import com.google.android.gms.maps.model.LatLng
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 
 sealed class Destination {
@@ -9,6 +11,9 @@ sealed class Destination {
 
     @Serializable
     object permision: Destination()
+
+    @Serializable
+    object permisionCamera: Destination()
 
     @Serializable
     object CreateMarker: Destination()
@@ -26,7 +31,10 @@ sealed class Destination {
     object Drawer: Destination()
 
     @Serializable
-    object Settings: Destination()
+    object Camera: Destination()
+
+    @Serializable
+    data class DetailMarker (val id:Int?): Destination()
 
     @Serializable
     object About: Destination()
