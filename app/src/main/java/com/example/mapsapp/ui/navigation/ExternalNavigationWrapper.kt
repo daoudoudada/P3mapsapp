@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.mapsapp.ui.navigation.Destination
 import com.example.mapsapp.ui.screens.DrawerScreen
 import com.example.mapsapp.ui.screens.LoginScreen
+import com.example.mapsapp.ui.screens.PermissionCamera
 import com.example.mapsapp.ui.screens.PermissionScreen
 import com.example.mapsapp.ui.screens.RegisterScreen
 
@@ -24,7 +25,10 @@ fun ExternalNavigationWrapper() {
             RegisterScreen{ navController.navigate(Destination.permision) }
         }
         composable<Destination.permision> {
-            PermissionScreen{ navController.navigate(Destination.Drawer)}
+            PermissionScreen{ navController.navigate(Destination.permisionCamera)}
+        }
+        composable<Destination.permisionCamera> {
+            PermissionCamera{ navController.navigate(Destination.Drawer)}
         }
         composable<Destination.Drawer> {
                 DrawerScreen {

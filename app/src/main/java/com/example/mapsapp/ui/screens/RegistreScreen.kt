@@ -32,9 +32,10 @@ fun RegisterScreen(
         if (showError.value) {
             val errorMessage = (authState as AuthState.Error).message
             Log.d("RegisterScreen", "Error message: $errorMessage")
-            if (errorMessage!!.contains("invalid_credentials")) {
-                Toast.makeText(context, "Invalid credentials", Toast.LENGTH_LONG).show()
-            } else {
+            if (errorMessage!!.contains("weak_password")) {
+                Toast.makeText(context, "Password should be at least 6 characters", Toast.LENGTH_LONG).show()
+            }
+            else {
                 Toast.makeText(context, "An error has ocurred", Toast.LENGTH_LONG).show()
             }
             viewModel.errorMessageShowed()

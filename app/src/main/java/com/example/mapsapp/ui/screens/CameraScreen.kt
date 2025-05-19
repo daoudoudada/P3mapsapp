@@ -1,118 +1,48 @@
 package com.example.mapsapp.ui.screens
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.mapsapp.utils.SharedPreferencesHelper
-import com.example.mapsapp.viewmodels.AuthViewModel
-import com.example.mapsapp.viewmodels.AuthViewModelFactory
 import com.example.mapsapp.viewmodels.MyViewModel
-import com.google.android.gms.maps.model.LatLng
-import java.util.UUID
-
+import java.io.File
 
 @Composable
-fun CreateMarkerScreen(
-    modifier: Modifier,
-    onMarkerCreated: () -> Unit,
-    myViewModel: MyViewModel
-) {
+fun CameraScreen(OnCameraClick: () -> Unit) {
     val context = LocalContext.current
-    val viewModel: AuthViewModel =
-        viewModel(factory = AuthViewModelFactory(SharedPreferencesHelper(context)))
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
     val imageUri = remember { mutableStateOf<Uri?>(null) }
     val bitmap = remember { mutableStateOf<Bitmap?>(null) }
-    var imageUrl by remember { mutableStateOf("") }
-    val userId by viewModel.userId.observeAsState()
-    val markerPosition by myViewModel.markerPosition.observeAsState(LatLng(0.0, 0.0))
-    val foto by myViewModel.fotodelmarcador.observeAsState()
-    var showDialog by remember { mutableStateOf(false) }
+    val myViewModel = viewModel<MyViewModel>()
 
-    Log.d("CreateMarkerScreen", "userId: $foto")
-    Column(modifier = modifier.padding(16.dp)) {
-        OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
-            label = { Text("Título") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text("Descripción") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Button(onClick = { showDialog = true }) {
-            Text("Abrir Cámara o Galería")
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        bitmap.value?.let {
-            Image(
-                bitmap = it.asImageBitmap(),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(300.dp)
-                    .clip(RoundedCornerShape(16.dp)),
-                contentScale = ContentScale.Crop
-            )
-        }
-
-            Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = {
-                myViewModel.insertMarkerWithImage(
-                    userId = userId,
-                    title = title,
-                    description = description.ifBlank { null },
-                    latitude = markerPosition.latitude,
-                    longitude = markerPosition.longitude,
-                    image = bitmap.value // o usa `foto` si lo tienes en el ViewModel
-                )
-                onMarkerCreated()
-            },
-            enabled = title.isNotBlank()
-        ) {
-            Text("Crear marcador")
-        }
-        }
     val takePictureLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
             if (success && imageUri.value != null) {
@@ -142,6 +72,7 @@ fun CreateMarkerScreen(
             }
         }
 
+    var showDialog by remember { mutableStateOf(false) }
 
     if (showDialog) {
         AlertDialog(
@@ -169,5 +100,51 @@ fun CreateMarkerScreen(
         )
     }
 
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = { showDialog = true }) {
+            Text("Abrir Cámara o Galería")
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        bitmap.value?.let {
+            Image(
+                bitmap = it.asImageBitmap(),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(300.dp)
+                    .clip(RoundedCornerShape(16.dp)),
+                contentScale = ContentScale.Crop
+            )
+        }
+        Button(onClick = {
+            myViewModel.setfoto(bitmap.value!!)
+            OnCameraClick()
+        }
+        ) {
+            Text("Guardar Imagen")
+        }
+    }
 }
+
+fun createImageUri(context: Context): Uri? {
+    val file = File.createTempFile("temp_image_", ".jpg", context.cacheDir).apply {
+        createNewFile()
+        deleteOnExit()
+    }
+
+    return FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.fileprovider",
+        file
+    )
+}
+
+
 

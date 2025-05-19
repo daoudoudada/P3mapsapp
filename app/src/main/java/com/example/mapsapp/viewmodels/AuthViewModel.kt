@@ -8,6 +8,7 @@ import com.example.mapsapp.MyApp
 import com.example.mapsapp.utils.AuthState
 import com.example.mapsapp.utils.SharedPreferencesHelper
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class AuthViewModel(private val sharedPreferences: SharedPreferencesHelper) : ViewModel(){
     private val authManager = MyApp.database
@@ -20,8 +21,8 @@ class AuthViewModel(private val sharedPreferences: SharedPreferencesHelper) : Vi
     val authState = _authState
     private val _showError = MutableLiveData<Boolean>(false)
     val showError = _showError
-    private val _user = MutableLiveData<String?>()
-    val user = _user
+    private val _userId = MutableLiveData<String?>()
+    val userId = _userId
 
     init {
         checkExistingSession()
@@ -32,8 +33,16 @@ class AuthViewModel(private val sharedPreferences: SharedPreferencesHelper) : Vi
             val accessToken = sharedPreferences.getAccessToken()
             val refreshToken = sharedPreferences.getRefreshToken()
             when {
-                !accessToken.isNullOrEmpty() -> refreshToken()
-                !refreshToken.isNullOrEmpty() -> refreshToken()
+                !accessToken.isNullOrEmpty() -> {
+                    refreshToken()
+                    val session = authManager.retrieveCurrentSession()
+                    _userId.value = session?.user?.id
+                }
+                !refreshToken.isNullOrEmpty() -> {
+                    refreshToken()
+                    val session = authManager.retrieveCurrentSession()
+                    _userId.value = session?.user?.id
+                }
                 else -> _authState.value = AuthState.Unauthenticated
             }
         }
@@ -56,6 +65,8 @@ class AuthViewModel(private val sharedPreferences: SharedPreferencesHelper) : Vi
 
             } else {
                 val session = authManager.retrieveCurrentSession()
+                _userId.value = session?.user?.id
+
                 Log.d("AuthViewModel", "Access Token: ${session}")
                 sharedPreferences.saveAuthData(
                     session!!.accessToken,
@@ -73,6 +84,8 @@ class AuthViewModel(private val sharedPreferences: SharedPreferencesHelper) : Vi
                 Log.d("AuthViewModel", "Error: ${(_authState.value as AuthState.Error).message}")
             } else {
                 val session = authManager.retrieveCurrentSession()
+                _userId.value = session?.user?.id
+
                 sharedPreferences.saveAuthData(
                     session!!.accessToken,
                     session.refreshToken
